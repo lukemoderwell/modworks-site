@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import { ModworksLogo } from '../components/ModworksLogo';
+import Analytics from '@vercel/analytics/astro';
 ---
 
 <Base>
@@ -112,6 +113,7 @@ import { ModworksLogo } from '../components/ModworksLogo';
       </a>
     </nav>
   </main>
+  <Analytics />
 </Base>
 
 <style>
