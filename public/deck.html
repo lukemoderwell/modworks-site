@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Modworks — Capabilities Deck</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --cream: #EEEAE3;
+      --dark: #1A1A1A;
+      --white: #FFFFFF;
+      --muted: rgba(26, 26, 26, 0.45);
+      --faint: rgba(26, 26, 26, 0.15);
+    }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--dark);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Slide container ── */
+    .deck {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+    .slide.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .slide-inner {
+      width: 1440px;
+      height: 900px;
+      margin: auto;
+      background: var(--cream);
+      border-radius: 6px;
+      position: relative;
+      overflow: hidden;
+      padding: 64px 80px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Section label (uppercase, small) ── */
+    .section-label {
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      display: flex;
+      gap: 24px;
+      align-items: center;
+    }
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--faint);
+    }
+
+    /* ── Typography ── */
+    .type-display {
+      font-size: 72px;
+      font-weight: 700;
+      line-height: 0.92;
+      letter-spacing: -0.04em;
+    }
+    .type-h1 {
+      font-size: 52px;
+      font-weight: 700;
+      line-height: 0.95;
+      letter-spacing: -0.03em;
+    }
+    .type-h2 {
+      font-size: 36px;
+      font-weight: 600;
+      line-height: 1.05;
+      letter-spacing: -0.025em;
+    }
+    .type-h3 {
+      font-size: 22px;
+      font-weight: 600;
+      line-height: 1.2;
+      letter-spacing: -0.015em;
+    }
+    .type-body {
+      font-size: 18px;
+      line-height: 1.6;
+      letter-spacing: -0.01em;
+      color: var(--muted);
+    }
+    .type-body-lg {
+      font-size: 22px;
+      line-height: 1.5;
+      letter-spacing: -0.015em;
+      color: var(--muted);
+    }
+
+    /* ── Utilities ── */
+    .mt-auto { margin-top: auto; }
+    .mb-auto { margin-bottom: auto; }
+    .gap-sm { gap: 16px; }
+    .gap-md { gap: 24px; }
+    .gap-lg { gap: 40px; }
+    .gap-xl { gap: 64px; }
+    .flex-col { display: flex; flex-direction: column; }
+    .flex-row { display: flex; flex-direction: row; }
+    .flex-1 { flex: 1; }
+    .items-start { align-items: flex-start; }
+    .items-center { align-items: center; }
+    .items-end { align-items: flex-end; }
+    .justify-center { justify-content: center; }
+    .text-muted { color: var(--muted); }
+    .text-faint { color: var(--faint); }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--white);
+      border-radius: 12px;
+      padding: 32px;
+      border: 1px solid rgba(26, 26, 26, 0.06);
+      flex: 1;
+    }
+
+    /* ── Bullet list ── */
+    .bullets {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .bullets li {
+      font-size: 20px;
+      line-height: 1.5;
+      letter-spacing: -0.01em;
+      padding-left: 20px;
+      position: relative;
+    }
+    .bullets li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 10px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--dark);
+    }
+
+    .bullets.muted li { color: var(--muted); }
+    .bullets.muted li::before { background: var(--muted); }
+
+    /* ── Divider ── */
+    .divider {
+      width: 100%;
+      height: 1px;
+      background: var(--faint);
+    }
+
+    /* ── Grid helpers ── */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; }
+    .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 24px; }
+
+    /* ── Slide counter ── */
+    .slide-counter {
+      position: fixed;
+      bottom: 24px;
+      right: 32px;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.35);
+      letter-spacing: 0.02em;
+      z-index: 100;
+    }
+
+    /* ────────────────────────────────────────────────
+     * ANIMATION STORYBOARD
+     *
+     * Each slide entrance is stage-driven.
+     * Elements with [data-anim] start hidden and
+     * animate in sequentially when the slide becomes active.
+     *
+     *    0ms    slide crossfade begins
+     *  100ms    first [data-anim="1"] element rises in
+     *  200ms    [data-anim="2"] follows
+     *  300ms    [data-anim="3"] follows
+     *    ...    each subsequent element +100ms
+     * ──────────────────────────────────────────────── */
+
+    [data-anim] {
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .slide.active [data-anim].anim-in {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Scale-pop variant for cards and stat boxes */
+    [data-anim-pop] {
+      opacity: 0;
+      transform: scale(0.92);
+      transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .slide.active [data-anim-pop].anim-in {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    /* Slide crossfade — slightly faster for snappier feel */
+    .slide {
+      transition: opacity 0.35s ease;
+    }
+
+    /* ────────────────────────────────────────────────
+     * LOGO ANIMATION STORYBOARD
+     *
+     * Read top-to-bottom. Each `at` is ms after slide active.
+     *
+     *     0ms    solid dark ellipse fades in
+     *   200ms    globe wireframe + wordmark fade in together
+     *   900ms    slide headline begins entrance
+     * ──────────────────────────────────────────────── */
+
+    .logo-fill {
+      opacity: 0;
+      transition: opacity 0.4s ease-out;
+    }
+    .logo-fill.anim-in {
+      opacity: 1;
+    }
+
+    .logo-detail {
+      opacity: 0;
+      transform: translateY(3px);
+      transition: opacity 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    .logo-detail.anim-in {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── Comparison columns ── */
+    .compare-left {
+      border-right: 1px solid var(--faint);
+      padding-right: 48px;
+    }
+    .compare-right {
+      padding-left: 48px;
+    }
+
+    /* ── Tag ── */
+    .tag {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 4px;
+      background: rgba(26, 26, 26, 0.06);
+      color: var(--muted);
+    }
+
+    /* ── Offer card accent bar ── */
+    .card-accent {
+      position: relative;
+    }
+    .card-accent::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      border-radius: 12px 12px 0 0;
+      background: var(--dark);
+    }
+
+    /* ── Price ── */
+    .price {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--dark);
+    }
+
+    /* ── Pill badge (Cherith HeroBadge pattern) ── */
+    .pill-badge {
+      display: inline-flex;
+      align-self: flex-start;
+      align-items: center;
+      gap: 8px;
+      border-radius: 100px;
+      padding: 6px 14px;
+      border: 1px solid rgba(26, 26, 26, 0.12);
+      background: var(--white);
+    }
+    .pill-badge .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--dark);
+      flex-shrink: 0;
+    }
+    .pill-badge span {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--dark);
+    }
+
+    /* ── Checklist (numbered deliverables) ── */
+    .checklist {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .checklist-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+    .checklist-num {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+      flex-shrink: 0;
+      width: 20px;
+      padding-top: 2px;
+    }
+    .checklist-text {
+      font-size: 17px;
+      line-height: 1.45;
+      letter-spacing: -0.01em;
+      color: var(--dark);
+    }
+
+    /* ── Arrow CTA (Cherith PathwayCard pattern) ── */
+    .arrow-cta {
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--dark);
+    }
+
+    /* ── Stat cards (problem slide) ── */
+    .stat-card-problem {
+      background: var(--white);
+      border: 1px solid rgba(26, 26, 26, 0.08);
+      border-radius: 12px;
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .stat-card-answer {
+      background: var(--dark);
+      color: var(--white);
+      border-radius: 12px;
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .stat-label {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .stat-value {
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+    }
+  </style>
+</head>
+<body>
+
+<div class="deck" id="deck">
+
+  <!-- ═══════ 01 COVER ═══════ -->
+  <div class="slide active" data-slide="0">
+    <div class="slide-inner flex-col">
+      <!-- Globe mark, top-left — animated draw-on -->
+      <div style="margin-bottom:auto;" id="logo-anim">
+        <svg width="64" height="56" viewBox="0 0 432 378" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Stage 1: Solid dark ellipse fades in -->
+          <ellipse class="logo-fill" data-logo-stage="1" cx="216" cy="189" rx="216" ry="189" fill="#1A1A1A"/>
+
+          <!-- Stage 2: Globe wireframe + wordmark fade in together -->
+          <g class="logo-detail" data-logo-stage="2">
+            <path fill="#FFFFFF" d="M57.8164 237.114C58.9647 239.703 60.2047 242.258 61.5303 244.779C72.9108 249.278 84.3956 253.289 95.9297 256.821C93.2699 250.479 90.9707 243.899 89.0645 237.114H105.729C108.523 246.088 112.077 254.595 116.286 262.547C123.849 264.488 131.42 266.226 138.982 267.763C135.763 258.155 133.115 247.891 131.119 237.114H147.447C149.881 249.357 153.204 260.761 157.237 271.085C166.585 272.589 175.9 273.785 185.156 274.677C183.358 263.133 181.911 250.521 180.884 237.114H196.971C198.079 251.167 199.654 264.224 201.602 275.947C211.266 276.507 220.845 276.729 230.303 276.622C232.303 264.726 233.919 251.437 235.049 237.114H251.136C250.066 251.075 248.541 264.173 246.639 276.101C255.816 275.617 264.858 274.813 273.73 273.693C278.237 262.693 281.926 250.397 284.566 237.114H300.896C298.68 249.076 295.661 260.405 291.95 270.906C300.875 269.295 309.594 267.347 318.072 265.067C322.882 256.401 326.903 247.044 329.995 237.114H346.658C344.575 244.527 342.023 251.695 339.044 258.575C349.988 254.715 360.428 250.248 370.273 245.184C371.68 242.532 372.99 239.841 374.199 237.114H391.641C368.328 297.959 301.996 342.436 222.963 344.911C221.27 344.983 219.569 345.021 217.861 345.021L217.061 345.016C216.71 345.017 216.358 345.021 216.007 345.021L213.622 345.008C132.584 344.14 64.1325 299.129 40.3721 237.114H57.8164ZM204.251 290.005C204.661 291.93 205.081 293.806 205.513 295.63C208.702 309.109 212.263 318.899 215.637 324.93C215.764 325.157 215.889 325.375 216.01 325.583C216.131 325.375 216.255 325.157 216.382 324.93C219.755 318.899 223.317 309.109 226.506 295.63C226.897 293.976 227.278 292.28 227.651 290.544C219.914 290.579 212.108 290.399 204.251 290.005ZM164.021 286.158C164.94 287.939 165.881 289.675 166.846 291.362C176.198 307.717 186.831 318.435 197.534 324.103C193.766 314.877 190.421 302.915 187.648 288.86C179.806 288.172 171.924 287.271 164.021 286.158ZM266.766 288.484C259.309 289.249 251.753 289.802 244.117 290.142C241.395 303.641 238.139 315.156 234.486 324.1C245.187 318.431 255.818 307.714 265.168 291.362C265.708 290.418 266.24 289.458 266.766 288.484ZM306.945 282.088C300.041 283.603 293.012 284.916 285.874 286.025C280.685 297.439 274.602 307.552 267.809 316.04C282.681 307.963 296.025 296.381 306.945 282.088ZM126.74 279.354C136.389 292.659 148.09 303.763 161.169 312.07C155.023 303.683 149.523 293.918 144.818 283.042C138.795 281.935 132.766 280.707 126.74 279.354ZM74.0479 264.268C88.9024 283.594 109.346 299.859 133.749 311.247C122.209 300.684 112.201 287.995 104.167 273.695C94.0838 270.904 84.0329 267.761 74.0479 264.268ZM355.716 267.122C347.486 270.461 338.965 273.448 330.188 276.078C323.375 287.733 315.234 298.27 306.013 307.4C325.842 296.937 342.734 283.148 355.716 267.122ZM96.0088 159C102.609 159 107.764 161.047 111.474 165.138C115.237 169.229 117.12 174.984 117.12 182.402V195.168C117.12 202.805 115.237 208.614 111.474 212.597C107.764 216.579 102.609 218.57 96.0088 218.57C89.4081 218.57 84.225 216.579 80.4609 212.597C76.7517 208.614 74.8965 202.805 74.8965 195.168V182.402C74.8966 174.984 76.7518 169.229 80.4609 165.138C84.225 161.046 89.4081 159 96.0088 159ZM246.314 159C252.915 159 258.071 161.046 261.78 165.138C265.544 169.229 267.426 174.984 267.426 182.402V195.168C267.426 202.805 265.544 208.614 261.78 212.597C258.071 216.579 252.915 218.57 246.314 218.57C239.714 218.57 234.532 216.579 230.768 212.597C227.058 208.614 225.203 202.805 225.203 195.168V182.402C225.203 174.984 227.058 169.229 230.768 165.138C234.532 161.047 239.714 159 246.314 159ZM390.07 159C393.452 159 396.453 159.491 399.071 160.473C401.69 161.4 403.872 162.683 405.617 164.319C407.417 165.956 408.754 167.838 409.627 169.965C410.554 172.092 411.018 174.329 411.018 176.675V179.621H400.217V177.657C400.217 175.366 399.317 173.375 397.517 171.684C395.771 169.993 393.289 169.146 390.07 169.146C387.343 169.146 385.188 169.72 383.606 170.865C382.025 171.956 381.234 173.456 381.233 175.365C381.233 176.347 381.424 177.248 381.806 178.066C382.188 178.83 382.842 179.539 383.77 180.193C384.751 180.793 386.006 181.339 387.533 181.83C389.115 182.321 391.107 182.784 393.507 183.221C399.507 184.312 404.09 186.139 407.254 188.703C410.418 191.267 412 195.059 412 200.077V201.06C412 203.732 411.509 206.16 410.527 208.342C409.6 210.469 408.236 212.297 406.436 213.824C404.635 215.352 402.453 216.525 399.89 217.343C397.326 218.161 394.434 218.57 391.216 218.57C387.452 218.57 384.125 218.052 381.233 217.016C378.397 215.925 376.024 214.451 374.114 212.597C372.205 210.687 370.759 208.478 369.777 205.969C368.796 203.405 368.305 200.623 368.305 197.623V195.168H379.105V197.132C379.106 200.568 380.087 203.324 382.051 205.396C384.069 207.415 387.179 208.424 391.38 208.424C394.653 208.424 397.08 207.714 398.662 206.296C400.244 204.878 401.035 203.186 401.035 201.223C401.035 200.295 400.871 199.423 400.544 198.604C400.217 197.732 399.644 196.968 398.826 196.313C398.008 195.604 396.889 194.977 395.471 194.432C394.052 193.886 392.252 193.422 390.07 193.04C387.179 192.549 384.533 191.922 382.133 191.158C379.733 190.34 377.632 189.276 375.832 187.967C374.087 186.658 372.723 185.021 371.741 183.058C370.759 181.094 370.269 178.693 370.269 175.856V175.365C370.269 173.02 370.732 170.865 371.659 168.901C372.641 166.883 373.978 165.137 375.669 163.664C377.415 162.191 379.488 161.046 381.888 160.228C384.342 159.409 387.07 159 390.07 159ZM143.841 160.146C150.932 160.146 156.197 161.809 159.634 165.137C163.07 168.41 164.789 173.511 164.789 180.438V197.131C164.789 204.059 163.07 209.187 159.634 212.515C156.197 215.788 150.932 217.425 143.841 217.425H123.058V207.032H128.458V170.456H123.058V160.146H143.841ZM297.503 160.146C300.449 160.146 303.04 160.555 305.276 161.373C307.513 162.191 309.368 163.337 310.841 164.81C312.368 166.228 313.514 167.892 314.277 169.801C315.096 171.71 315.505 173.757 315.505 175.938V177.902C315.505 180.248 314.878 182.457 313.623 184.53C312.368 186.549 310.431 188.103 307.812 189.194V190.667C309.722 190.885 311.222 191.621 312.313 192.876C313.459 194.131 314.032 195.713 314.032 197.622V217.425H303.23V200.241C303.23 198.932 302.876 197.868 302.167 197.05C301.512 196.232 300.393 195.822 298.812 195.822H286.374V217.425H275.573V160.146H297.503ZM336.804 183.63H339.177L354.314 160.146H366.507V160.637L348.832 188.049V189.521L367.488 216.934V217.425H354.806L339.177 193.94H336.804V217.425H326.003V160.146H336.804V183.63ZM42.0469 201.471H44.1875L47.3496 159.89H66.2344V216.868H56.4658V180.844H54.2393L51.2568 216.868H48.0898V216.869L38.9385 216.868H35.1396L32.042 180.844H29.7676V216.868H20V159.89H38.8848L42.0469 201.471ZM199.333 159.813H203.132L206.229 195.838H208.504V159.813H218.271V216.792H199.387L196.225 175.211H194.084L190.922 216.792H172.037V159.813H181.806V195.838H184.032L187.015 159.813H190.182V159.812L199.333 159.813ZM96.0088 168.819C94.1543 168.819 92.5718 169.174 91.2627 169.883C89.9535 170.537 88.8895 171.438 88.0713 172.584C87.2531 173.729 86.6523 175.093 86.2705 176.675C85.8887 178.257 85.6983 179.948 85.6982 181.748V195.822C85.6982 197.731 85.8622 199.478 86.1895 201.06C86.5167 202.641 87.0892 204.005 87.9072 205.15C88.7254 206.296 89.7895 207.196 91.0986 207.851C92.4079 208.451 94.0449 208.751 96.0088 208.751C97.9724 208.751 99.6088 208.451 100.918 207.851C102.227 207.196 103.291 206.296 104.109 205.15C104.927 204.005 105.5 202.641 105.827 201.06C106.154 199.478 106.318 197.731 106.318 195.822V181.748C106.318 179.948 106.128 178.257 105.746 176.675C105.364 175.093 104.763 173.729 103.945 172.584C103.127 171.438 102.063 170.537 100.754 169.883C99.4449 169.174 97.8631 168.819 96.0088 168.819ZM246.314 168.819C244.46 168.819 242.877 169.174 241.568 169.883C240.259 170.537 239.196 171.439 238.378 172.584C237.56 173.729 236.959 175.093 236.577 176.675C236.195 178.257 236.005 179.948 236.005 181.748V195.822C236.005 197.731 236.168 199.478 236.495 201.06C236.822 202.641 237.396 204.005 238.214 205.15C239.032 206.296 240.096 207.196 241.405 207.851C242.714 208.451 244.351 208.751 246.314 208.751C248.278 208.751 249.915 208.451 251.225 207.851C252.534 207.196 253.598 206.296 254.416 205.15C255.234 204.005 255.807 202.641 256.134 201.06C256.461 199.478 256.625 197.731 256.625 195.822V181.748C256.625 179.948 256.434 178.257 256.052 176.675C255.67 175.093 255.07 173.729 254.252 172.584C253.434 171.438 252.37 170.537 251.061 169.883C249.751 169.174 248.169 168.819 246.314 168.819ZM139.259 207.114H143.841C147.605 207.114 150.223 206.241 151.696 204.496C153.224 202.696 153.988 199.913 153.988 196.149V180.438C153.988 177.166 153.224 174.683 151.696 172.992C150.223 171.301 147.605 170.456 143.841 170.456H139.259V207.114ZM286.374 185.512H296.685C299.303 185.512 301.294 184.912 302.658 183.712C304.022 182.457 304.703 180.711 304.703 178.475V177.493C304.703 175.584 304.022 173.947 302.658 172.583C301.294 171.165 299.303 170.456 296.685 170.456H286.374V185.512ZM216.011 32.9805L217.105 32.9854C217.357 32.9838 217.609 32.9795 217.861 32.9795L219.611 32.9922C220.731 33.0085 221.847 33.0423 222.96 33.0898C301.994 35.5638 368.329 80.0409 391.642 140.887H374.199C372.908 137.977 371.502 135.109 369.987 132.285C360.166 127.251 349.757 122.808 338.847 118.969C341.911 125.988 344.53 133.31 346.659 140.887H329.995C326.848 130.783 322.739 121.271 317.816 112.478C309.372 110.215 300.69 108.281 291.804 106.681C295.582 117.298 298.651 128.768 300.896 140.887H284.566C281.893 127.439 278.145 115.003 273.562 103.898C264.723 102.787 255.717 101.989 246.575 101.509C248.507 113.541 250.054 126.773 251.136 140.887H235.049C233.907 126.408 232.268 112.985 230.237 100.99C220.821 100.885 211.286 101.108 201.666 101.663C199.688 113.486 198.091 126.678 196.971 140.887H180.884C181.923 127.327 183.391 114.581 185.218 102.931C175.995 103.818 166.712 105.008 157.397 106.503C153.291 116.936 149.913 128.481 147.447 140.887H131.119C133.144 129.954 135.841 119.55 139.123 109.822C131.593 111.35 124.054 113.076 116.523 115.005C112.21 123.085 108.577 131.744 105.729 140.887H89.0654C91.0164 133.944 93.3779 127.214 96.1172 120.735C84.6065 124.255 73.1447 128.253 61.7861 132.734C60.3632 135.413 59.0377 138.131 57.8154 140.887H40.3711C64.364 78.264 133.929 32.9797 216.007 32.9795H216.01L216.011 32.9805ZM133.753 66.752C109.571 78.0366 89.2732 94.1078 74.4521 113.204C84.3899 109.737 94.3927 106.619 104.427 103.847C112.417 89.7332 122.336 77.2024 133.753 66.752ZM306.017 70.6025C315.113 79.6094 323.159 89.9857 329.915 101.453C338.622 104.054 347.08 107.006 355.251 110.304C342.333 94.523 325.607 80.9411 306.017 70.6025ZM161.169 65.9307C148.243 74.1409 136.662 85.084 127.078 98.1846C133.052 96.8471 139.029 95.6329 145 94.5381C149.664 83.8305 155.103 74.2098 161.169 65.9307ZM267.809 61.9609C274.52 70.3454 280.538 80.3162 285.685 91.5596C292.765 92.6564 299.739 93.9528 306.59 95.4482C295.736 81.3683 282.52 69.9499 267.809 61.9609ZM197.534 53.8984C186.831 59.5662 176.198 70.2829 166.846 86.6377C165.956 88.1936 165.086 89.7905 164.235 91.4258C172.093 90.3234 179.928 89.4304 187.726 88.7471C190.483 74.8628 193.801 63.038 197.534 53.8984ZM234.486 53.9014C238.104 62.7587 241.33 74.1378 244.036 87.4688C251.624 87.8048 259.131 88.3496 266.542 89.1055C266.089 88.2724 265.632 87.449 265.168 86.6377C255.818 70.2861 245.187 59.5699 234.486 53.9014ZM215.637 53.0703C212.263 59.1006 208.702 68.8904 205.513 82.3691C205.11 84.0701 204.718 85.8159 204.334 87.6045C212.136 87.2151 219.886 87.0362 227.569 87.0693C227.222 85.4673 226.868 83.9001 226.506 82.3691C223.317 68.8904 219.755 59.1005 216.382 53.0703C216.255 52.8431 216.13 52.6253 216.01 52.418C215.889 52.6254 215.764 52.843 215.637 53.0703Z"/>
+
+          </g>
+        </svg>
+      </div>
+      <div style="flex:1; display:flex; flex-direction:column; justify-content:center;">
+        <div class="type-display" data-anim="1" style="margin-bottom: 20px;">
+          Design + Engineering<br>for teams building with AI.
+        </div>
+      </div>
+      <div class="flex-row items-end" data-anim="2" style="justify-content:space-between;">
+        <div>
+          <div style="font-size:20px; font-weight:600; letter-spacing:-0.01em;">Luke Moderwell</div>
+          <div class="type-body" style="font-size:16px;">Modworks</div>
+        </div>
+        <div class="type-body" style="font-size:14px;">luke@modworks.design</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ 02 PROBLEM + MODEL ═══════ -->
+  <div class="slide" data-slide="1">
+    <div class="slide-inner flex-col gap-lg">
+      <div class="section-label" data-anim="1"><span>02</span> The problem</div>
+      <div class="flex-row gap-xl flex-1">
+        <!-- Left: heading + bullets -->
+        <div class="flex-col flex-1" style="justify-content:center; padding-right:24px;">
+          <div class="type-h1" data-anim="2" style="margin-bottom:40px;">
+            Most teams stack vendors. You need one operator.
+          </div>
+          <ul class="bullets muted" data-anim="3" style="gap:16px;">
+            <li>Strategy separated from execution.</li>
+            <li>Context lost at every handoff.</li>
+            <li>Founder becomes project manager.</li>
+            <li>Timelines slip rebuilding alignment.</li>
+          </ul>
+        </div>
+        <!-- Right: 2x2 stat grid -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; width:480px; align-content:center;">
+          <div class="stat-card-problem" data-anim-pop="4">
+            <div class="stat-label">Typical setup</div>
+            <div class="stat-value">3–5 vendors</div>
+          </div>
+          <div class="stat-card-answer" data-anim-pop="5">
+            <div class="stat-label" style="color:rgba(255,255,255,0.6);">Modworks</div>
+            <div class="stat-value">1 partner</div>
+          </div>
+          <div class="stat-card-problem" data-anim-pop="6">
+            <div class="stat-label">Coordination cost</div>
+            <div class="stat-value">Founder's time</div>
+          </div>
+          <div class="stat-card-answer" data-anim-pop="7">
+            <div class="stat-label" style="color:rgba(255,255,255,0.6);">Handoff gaps</div>
+            <div class="stat-value">Zero</div>
+          </div>
+        </div>
+      </div>
+      <div data-anim="8" style="font-size:17px; letter-spacing:0.06em; color:var(--muted); font-weight:500;">Brand · Product · Web · Build — one person</div>
+    </div>
+  </div>
+
+  <!-- ═══════ 03 PROOF — PRODUCT FORGE ═══════ -->
+  <div class="slide" data-slide="2">
+    <div class="slide-inner flex-col gap-lg">
+      <div class="section-label" data-anim="1"><span>03</span> Proof</div>
+      <div class="flex-row gap-xl flex-1">
+        <!-- Left column -->
+        <div class="flex-col flex-1" style="justify-content:center; padding-right:32px;">
+          <div class="pill-badge" data-anim-pop="2" style="margin-bottom:24px;">
+            <div class="dot"></div>
+            <span>Product Forge</span>
+          </div>
+          <div class="type-h2" data-anim="3" style="margin-bottom:16px;">
+            One person, 18 months.<br>Brand to production.
+          </div>
+          <div class="type-body" data-anim="4" style="font-size:16px;">
+            Replaced a brand designer, product designer, and frontend developer with one context thread.
+          </div>
+        </div>
+        <!-- Right column: checklist -->
+        <div class="flex-col" style="width:420px; justify-content:center;">
+          <div class="stat-label" data-anim="5" style="margin-bottom:20px;">What shipped</div>
+          <div class="checklist">
+            <div class="checklist-item" data-anim="6">
+              <div class="checklist-num">01</div>
+              <div class="checklist-text">Brand identity and visual system</div>
+            </div>
+            <div class="checklist-item" data-anim="7">
+              <div class="checklist-num">02</div>
+              <div class="checklist-text">Product design system and component library</div>
+            </div>
+            <div class="checklist-item" data-anim="8">
+              <div class="checklist-num">03</div>
+              <div class="checklist-text">Production React app — frontend and backend</div>
+            </div>
+            <div class="checklist-item" data-anim="9">
+              <div class="checklist-num">04</div>
+              <div class="checklist-text">Zero handoff gaps, zero coordination overhead</div>
+            </div>
+          </div>
+          <div class="arrow-cta" data-anim="10" style="margin-top:32px;">View case study →</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ 04 PROOF — CHERITH ═══════ -->
+  <div class="slide" data-slide="3">
+    <div class="slide-inner flex-col gap-lg">
+      <div class="section-label" data-anim="1"><span>04</span> Proof</div>
+      <div class="flex-row gap-xl flex-1">
+        <!-- Left column -->
+        <div class="flex-col flex-1" style="justify-content:center; padding-right:32px;">
+          <div class="pill-badge" data-anim-pop="2" style="margin-bottom:24px;">
+            <div class="dot"></div>
+            <span>Cherith</span>
+          </div>
+          <div class="type-h2" data-anim="3" style="margin-bottom:16px;">
+            Brand + website. 2 weeks.<br>Hard deadline.
+          </div>
+          <div class="type-body" data-anim="4" style="font-size:16px;">
+            Brand, UX, and frontend for a wealth advisory launching at a conference of 40 family offices. No handoffs.
+          </div>
+        </div>
+        <!-- Right column: checklist -->
+        <div class="flex-col" style="width:420px; justify-content:center;">
+          <div class="stat-label" data-anim="5" style="margin-bottom:20px;">What shipped</div>
+          <div class="checklist">
+            <div class="checklist-item" data-anim="6">
+              <div class="checklist-num">01</div>
+              <div class="checklist-text">Full brand identity — logo, color, type, illustration</div>
+            </div>
+            <div class="checklist-item" data-anim="7">
+              <div class="checklist-num">02</div>
+              <div class="checklist-text">6-page marketing site, designed and built</div>
+            </div>
+            <div class="checklist-item" data-anim="8">
+              <div class="checklist-num">03</div>
+              <div class="checklist-text">Live 2 days before the hard deadline</div>
+            </div>
+            <div class="checklist-item" data-anim="9">
+              <div class="checklist-num">04</div>
+              <div class="checklist-text">Codebase handed off with full documentation</div>
+            </div>
+          </div>
+          <div class="arrow-cta" data-anim="10" style="margin-top:32px;">View case study →</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ 05 HOW IT COMPARES ═══════ -->
+  <div class="slide" data-slide="4">
+    <div class="slide-inner flex-col gap-lg">
+      <div class="section-label" data-anim="1"><span>05</span> How it compares</div>
+      <div class="type-h1" data-anim="2">Three specialists vs. one partner.</div>
+      <div class="flex-row flex-1" style="margin-top:16px;">
+        <div class="compare-left flex-col gap-md flex-1" data-anim="3">
+          <div class="type-h3" style="color:var(--muted);">Typical setup</div>
+          <ul class="bullets muted">
+            <li>3 scopes, 3 meetings, 3 interpretations</li>
+            <li>Founder as project manager</li>
+            <li>Translation cost at every handoff</li>
+          </ul>
+        </div>
+        <div class="compare-right flex-col gap-md flex-1" data-anim="4">
+          <div class="type-h3">Modworks</div>
+          <ul class="bullets">
+            <li>One scope, one thread</li>
+            <li>Design shaped by build constraints from day one</li>
+            <li>Less drift between idea and shipped result</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ 06 OFFERS ═══════ -->
+  <div class="slide" data-slide="5">
+    <div class="slide-inner flex-col gap-lg">
+      <div class="section-label" data-anim="1"><span>06</span> How we work</div>
+      <div class="type-h1" data-anim="2">Two ways to work together.</div>
+      <div class="flex-row gap-lg flex-1" style="margin-top:8px;">
+        <div class="card card-accent flex-col gap-md flex-1" data-anim-pop="3">
+          <div class="pill-badge" style="margin-bottom:4px;">
+            <div class="dot"></div>
+            <span>Sprint</span>
+          </div>
+          <div class="type-h2" style="margin-top:8px;">Ship your project in less than a month.</div>
+          <div class="price" style="margin-top:4px;">$9K–$30K</div>
+          <div class="type-body" style="flex:1;">Brand, site, or product — scoped tight, delivered fast. One person from direction to deploy.</div>
+          <div class="stat-label" style="margin-top:auto; padding-top:16px; border-top:1px solid var(--faint);">Best for launches, redesigns, and new products</div>
+        </div>
+        <div class="card card-accent flex-col gap-md flex-1" data-anim-pop="4">
+          <div class="pill-badge" style="margin-bottom:4px;">
+            <div class="dot"></div>
+            <span>Design partner</span>
+          </div>
+          <div class="type-h2" style="margin-top:8px;">Ongoing design + engineering for your team.</div>
+          <div class="price" style="margin-top:4px;">Starting at $8K/mo</div>
+          <div class="type-body" style="flex:1;">A senior partner embedded in your workflow — shipping design and code week over week without the overhead of a full-time hire.</div>
+          <div class="stat-label" style="margin-top:auto; padding-top:16px; border-top:1px solid var(--faint);">Best for growing products and teams</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ 07 ABOUT + CREDIBILITY ═══════ -->
+  <div class="slide" data-slide="6">
+    <div class="slide-inner" style="padding:0; display:flex; flex-direction:row;">
+      <!-- Left: text -->
+      <div class="flex-col gap-lg" style="flex:1; padding:64px 56px 64px 80px; justify-content:center;">
+        <div class="section-label" data-anim="1"><span>07</span> About</div>
+        <div class="type-h2" data-anim="2" style="font-weight:700;">Designer. Engineer. Builder.</div>
+        <div class="type-body" data-anim="3" style="font-size:17px; color:var(--dark);">
+          10+ years shipping across brand, product, web, and code. I design and build with AI tooling daily — nothing about your stack will slow me down.
+        </div>
+        <div class="type-body" data-anim="4" style="font-size:17px;">
+          I'm not a strategist who hands off decks. I'm hands-on. I build. When I'm not building, I'm on 22 acres with 6 kids and 40+ farm animals — or in the sauna, or playing guitar.
+        </div>
+        <ul class="bullets muted" data-anim="5" style="margin-top:4px; gap:10px;">
+          <li style="font-size:16px;">Full-stack engineering (React, Node, deploys)</li>
+          <li style="font-size:16px;">Experience across startups, agencies, and product teams</li>
+        </ul>
+        <div data-anim="6" style="margin-top:auto;">
+          <div class="stat-label" style="margin-bottom:16px;">Experience includes</div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px 32px; opacity:0.7;">
+            <!-- Mailchimp -->
+            <div style="display:flex; align-items:center; height:28px;">
+              <img src="intuit-mailchimp.svg" alt="Intuit Mailchimp" style="width:130px;">
+            </div>
+            <!-- Product Forge -->
+            <div style="display:flex; align-items:center; height:28px;">
+              <img src="pf-logo.avif" alt="Product Forge" style="width:130px; filter:grayscale(1) brightness(0);">
+            </div>
+            <!-- Tembo -->
+            <div style="display:flex; align-items:center; height:28px;">
+              <img src="tembo-logo.svg" alt="Tembo" style="width:110px;">
+            </div>
+            <!-- Crossroads -->
+            <div style="display:flex; align-items:center; height:28px;">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 612 102" style="width:130px;" fill="#1A1A1A">
+                <path d="m161.7 37.7c-1.1 2.1-2.2 4.2-4.3 6.3-4.5 4.5-10.9 6.6-17.3 6.6-15.9 0-23.1-12-23.1-23.4 0-12 8-24.1 23.1-24.1 6.7 0 13.2 2.4 17.8 7.2 1.9 2 2.8 3.5 3.7 5.2l-11.8 5.9c-1.1-2.6-3.3-7.4-9.2-7.4-3.1 0-5 1.4-6 2.4-3.3 3.2-3.3 8.3-3.3 10 0 6.6 2.5 12.9 9.4 12.9 6.6 0 8.5-5.8 9-7.3z"/>
+                <path d="m168.3 4.6h22.2c4.2 0 8.3.3 11 1.4 5.9 2.5 7.7 8.6 7.7 12.9 0 1.7-.2 5.7-3.4 8.9-1.8 1.9-3.7 2.6-5.7 3.4l10.8 18h-15.6l-8.6-15.7h-4.2v15.7h-14.1v-44.6zm14.2 9.3v10.4h5.9c2.3 0 6.8-.1 6.8-5.2s-4.4-5.2-6.9-5.2z"/>
+                <path d="m262.3 26.5c0 11.3-6.6 24.1-24.1 24.1-18.2 0-23.7-13.5-23.7-23.6 0-12.7 7.9-23.9 23.9-23.9 17.7-.1 23.9 12.8 23.9 23.4zm-33.6.4c0 7.7 3.2 12.4 9.8 12.4 5.7 0 9.6-4.5 9.6-12.9 0-2.1-.2-4.1-.8-5.9-2.1-6.2-7.6-6.4-8.8-6.4-5.1.1-9.8 3.6-9.8 12.8z"/>
+                <path d="m276.8 33.8c1.3 2 2.3 3.6 6.2 4.9 1.8.6 4.1 1 6.2 1 1.1 0 6.7-.1 6.7-3.3 0-.3 0-2-2.5-2.8-1.6-.6-9.8-2-11.6-2.5-4.1-1.1-12.1-3.6-12.1-13 0-2 .4-4 1.3-5.7 2.9-6.6 10.4-9.1 18.4-9.1 5.1 0 9.8 1 13.4 2.8 3.3 1.6 5 3.4 6.6 5l-8.8 7.4c-.7-.9-1.4-1.9-3.4-2.9-2.6-1.3-6-1.6-8.3-1.6-2.4 0-5 .6-5 2.9 0 2.1 2.3 2.7 6.1 3.4 9.9 1.7 19.7 3.5 19.7 14.5 0 4.7-2 7.9-4 10-5.6 5.7-14.6 5.7-17 5.7-3.3 0-6.9-.3-10.3-1.3-7.1-2-10.3-6-12.3-8.4z"/>
+                <path d="m325.5 33.8c1.3 2 2.3 3.6 6.2 4.9 1.8.6 4.1 1 6.2 1 1.1 0 6.7-.1 6.7-3.3 0-.3 0-2-2.5-2.8-1.6-.6-9.8-2-11.6-2.5-4.1-1.1-12.1-3.6-12.1-13 0-2 .4-4 1.3-5.7 2.9-6.6 10.4-9.1 18.4-9.1 5.1 0 9.8 1 13.4 2.8 3.3 1.6 5 3.4 6.6 5l-8.8 7.4c-.7-.9-1.4-1.9-3.4-2.9-2.6-1.3-6-1.6-8.3-1.6-2.4 0-5 .6-5 2.9 0 2.1 2.3 2.7 6.1 3.4 9.9 1.7 19.7 3.5 19.7 14.5 0 4.7-2 7.9-4 10-5.6 5.7-14.6 5.7-17 5.7-3.3 0-6.9-.3-10.3-1.3-7.1-2-10.3-6-12.3-8.4z"/>
+                <path d="m366.1 4.6h22.2c4.2 0 8.3.3 11 1.4 5.9 2.5 7.7 8.6 7.7 12.9 0 1.7-.2 5.7-3.4 8.9-1.8 1.9-3.7 2.6-5.7 3.4l10.8 18h-15.7l-8.6-15.7h-4.2v15.7h-14.1zm14.2 9.3v10.4h5.9c2.3 0 6.8-.1 6.8-5.2s-4.4-5.2-6.9-5.2z"/>
+                <path d="m460.1 26.5c0 11.3-6.6 24.1-24.1 24.1-18.2 0-23.7-13.5-23.7-23.6 0-12.7 7.9-23.9 23.9-23.9 17.7-.1 23.9 12.8 23.9 23.4zm-33.6.4c0 7.7 3.2 12.4 9.8 12.4 5.7 0 9.6-4.5 9.6-12.9 0-2.1-.2-4.1-.8-5.9-2.1-6.2-7.6-6.4-8.8-6.4-5.1.1-9.8 3.6-9.8 12.8z"/>
+                <path d="m479.2 4.7h16l16.6 44.5h-15.1l-2-6.2h-15.5l-2 6.2h-15.1zm7.9 12.6-4.8 15.7h9.6z"/>
+                <path d="m517.7 4.7h15.1c10 .1 16.4.2 21.6 5.1 4.6 4.3 6.2 10.6 6.2 16.9 0 9.4-3.5 18.3-12.5 21.2-3.6 1.2-7.6 1.2-11.9 1.2h-18.5zm14.1 10.4v23.9h5.4c2-.1 4-.2 5.9-2.1 2.1-2 3.3-5.8 3.3-10 0-2.6-.4-4.7-1.1-6.6-1.9-5-5.4-5.2-8.2-5.3h-5.3z"/>
+                <path d="m575.1 33.8c1.3 2 2.3 3.6 6.2 4.9 1.8.6 4.1 1 6.2 1 1.1 0 6.7-.1 6.7-3.3 0-.3 0-2-2.5-2.8-1.6-.6-9.8-2-11.6-2.5-4.1-1.1-12.1-3.6-12.1-13 0-2 .4-4 1.3-5.7 2.9-6.6 10.4-9.1 18.4-9.1 5.1 0 9.8 1 13.4 2.8 3.3 1.6 5 3.4 6.6 5l-8.8 7.4c-.7-.9-1.4-1.9-3.4-2.9-2.6-1.3-6-1.6-8.3-1.6-2.4 0-5 .6-5 2.9 0 2.1 2.3 2.7 6.1 3.4 9.9 1.7 19.7 3.5 19.7 14.5 0 4.7-2 7.9-4 10-5.6 5.7-14.6 5.7-17 5.7-3.3 0-6.9-.3-10.3-1.3-7.1-2-10.3-6-12.3-8.4z"/>
+                <path d="m152.8 89.6c-.9 1.7-1.8 3.4-3.5 5.1-3.7 3.6-8.8 5.3-13.9 5.3-12.8 0-18.6-9.7-18.6-18.9 0-9.7 6.5-19.5 18.6-19.5 5.4 0 10.6 1.9 14.4 5.8 1.5 1.6 2.2 2.8 3 4.2l-9.5 4.7c-.9-2.1-2.6-6-7.4-6-2.5 0-4.1 1.2-4.8 1.9-2.7 2.6-2.7 6.7-2.7 8.1 0 5.3 2 10.4 7.6 10.4 5.3 0 6.9-4.7 7.3-5.9z"/>
+                <path d="m158.2 62.9h11.3v13.1h10.8v-13.1h11.4v35.9h-11.4v-13.8h-10.8v13.8h-11.3z"/>
+                <path d="m199.4 62.9h11.4v22.4c0 1.5.1 3.1 1.3 4.3.9 1 2.3 1.3 3.6 1.3 1.8 0 3-.7 3.6-1.3 1.3-1.3 1.4-2.8 1.4-4.4v-22.3h11.4v19.1c0 4.1 0 9.5-4.2 13.5-2.6 2.4-6.8 4.3-12.3 4.3-5.3 0-9.9-1.7-12.5-4.3-3.6-3.5-3.6-7.5-3.7-11.2z"/>
+                <path d="m239.7 62.9h17.9c3.4 0 6.7.2 8.9 1.1 4.8 2 6.2 6.9 6.2 10.4 0 1.4-.2 4.6-2.7 7.2-1.4 1.5-3 2.1-4.6 2.7l8.8 14.5h-12.6l-7-12.7h-3.4v12.7h-11.4v-35.9zm11.4 7.5v8.4h4.7c1.9 0 5.5-.1 5.5-4.2s-3.6-4.2-5.5-4.2z"/>
+                <path d="m313.2 89.6c-.9 1.7-1.8 3.4-3.5 5.1-3.7 3.6-8.8 5.3-13.9 5.3-12.8 0-18.6-9.7-18.6-18.9 0-9.7 6.5-19.5 18.6-19.5 5.4 0 10.6 1.9 14.4 5.8 1.5 1.6 2.2 2.8 3 4.2l-9.5 4.7c-.9-2.1-2.6-6-7.4-6-2.5 0-4.1 1.2-4.8 1.9-2.7 2.6-2.7 6.7-2.7 8.1 0 5.3 2 10.4 7.6 10.4 5.3 0 6.9-4.7 7.3-5.9z"/>
+                <path d="m318.6 62.9h11.4v13.1h10.8v-13.1h11.4v35.9h-11.4v-13.8h-10.8v13.8h-11.3v-35.9z"/>
+                <path d="m99.1 28.6-24.7-24.7-22.9 22.9-22.8-22.9-24.7 24.7 22.9 22.9-22.9 22.8 24.7 24.7 22.9-22.9 22.8 22.9 24.7-24.7-22.9-22.9zm-11.4 45.7-13.3 13.3-17.2-17.1 13.3-13.3zm-30.5-41.9 17.2-17.2 13.3 13.3-17.1 17.2zm-19 19-22.8-22.8 13.3-13.3 36.2 36.2-36.2 36.1-13.3-13.3z"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Right: photo -->
+      <div data-anim-pop="3" style="width:44%; flex-shrink:0; overflow:hidden; border-radius:0 6px 6px 0;">
+        <img src="about-photo.jpg" alt="Luke Moderwell" style="width:100%; height:100%; object-fit:cover; object-position:center top;">
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ 08 CTA ═══════ -->
+  <div class="slide" data-slide="7">
+    <div class="slide-inner flex-col" style="align-items:center; text-align:center; justify-content:center;">
+      <div class="type-display" data-anim="1" style="margin-bottom:32px;">
+        Ready to work together?
+      </div>
+      <div class="type-body-lg" data-anim="2" style="margin-bottom:48px;">
+        Start with a conversation. No pitch, no pressure.
+      </div>
+      <div data-anim="3" style="font-size:22px; font-weight:600; letter-spacing:-0.015em;">luke@modworks.design</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="slide-counter" id="counter">1 / 8</div>
+
+<script>
+  /* ────────────────────────────────────────────────
+   * ANIMATION TIMING
+   *
+   * staggerBase: ms between each sequential element
+   * initialDelay: ms after slide becomes active before first element animates
+   * ──────────────────────────────────────────────── */
+  const TIMING = {
+    initialDelay: 80,
+    staggerBase: 90,
+  };
+
+  const LOGO_TIMING = {
+    fill:         0,      // solid dark ellipse fades in
+    detail:       200,    // wireframe + wordmark fade in together
+    contentDelay: 900,    // when regular slide content starts
+  };
+
+  const slides = document.querySelectorAll('.slide');
+  const counter = document.getElementById('counter');
+  let current = 0;
+  let animTimers = [];
+
+  function clearAnimTimers() {
+    animTimers.forEach(t => clearTimeout(t));
+    animTimers = [];
+  }
+
+  function resetSlideAnims(slide) {
+    slide.querySelectorAll('[data-anim], [data-anim-pop], [data-logo-stage]').forEach(el => {
+      el.classList.remove('anim-in');
+    });
+  }
+
+  function animateSlide(slide) {
+    clearAnimTimers();
+
+    // Check for logo animation elements
+    const logoEls = slide.querySelectorAll('[data-logo-stage]');
+    const hasLogo = logoEls.length > 0;
+    const contentOffset = hasLogo ? LOGO_TIMING.contentDelay : 0;
+
+    // Animate logo stages with their own timing
+    if (hasLogo) {
+      const stageDelays = {
+        1: LOGO_TIMING.fill,
+        2: LOGO_TIMING.detail,
+      };
+      logoEls.forEach(el => {
+        const stage = parseInt(el.dataset.logoStage, 10);
+        const delay = stageDelays[stage] || 0;
+        const timer = setTimeout(() => el.classList.add('anim-in'), delay);
+        animTimers.push(timer);
+      });
+    }
+
+    // Gather all regular animated elements, sorted by their stagger index
+    const elements = [
+      ...slide.querySelectorAll('[data-anim]'),
+      ...slide.querySelectorAll('[data-anim-pop]')
+    ].sort((a, b) => {
+      const ai = parseInt(a.dataset.anim || a.dataset.animPop, 10);
+      const bi = parseInt(b.dataset.anim || b.dataset.animPop, 10);
+      return ai - bi;
+    });
+
+    elements.forEach((el, i) => {
+      const delay = contentOffset + TIMING.initialDelay + (i * TIMING.staggerBase);
+      const timer = setTimeout(() => el.classList.add('anim-in'), delay);
+      animTimers.push(timer);
+    });
+  }
+
+  function goTo(n) {
+    if (n < 0 || n >= slides.length) return;
+
+    // Reset outgoing slide animations
+    resetSlideAnims(slides[current]);
+
+    slides[current].classList.remove('active');
+    current = n;
+    slides[current].classList.add('active');
+    counter.textContent = `${current + 1} / ${slides.length}`;
+
+    // Trigger staggered entrance
+    animateSlide(slides[current]);
+  }
+
+  // Animate first slide on load
+  animateSlide(slides[0]);
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+      e.preventDefault();
+      goTo(current + 1);
+    }
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      goTo(current - 1);
+    }
+    if (e.key === 'Home') goTo(0);
+    if (e.key === 'End') goTo(slides.length - 1);
+  });
+</script>
+
+</body>
+</html>

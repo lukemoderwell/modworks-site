@@ -1,0 +1,15 @@
+<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+  <rect width="32" height="32" rx="6" fill="#161616" />
+  <!-- Outer ellipse -->
+  <ellipse cx="16" cy="16" rx="12" ry="12" fill="none" stroke="#F4F1EA" stroke-width="1.5" />
+  <!-- Vertical meridians -->
+  <ellipse cx="16" cy="16" rx="4" ry="12" fill="none" stroke="#F4F1EA" stroke-width="1.2" />
+  <ellipse cx="16" cy="16" rx="8.5" ry="12" fill="none" stroke="#F4F1EA" stroke-width="1.2" />
+  <!-- Horizontal parallels -->
+  <ellipse cx="16" cy="16" rx="12" ry="4" fill="none" stroke="#F4F1EA" stroke-width="1.2" />
+  <ellipse cx="16" cy="16" rx="12" ry="8.5" fill="none" stroke="#F4F1EA" stroke-width="1.2" />
+  <!-- Equator -->
+  <line x1="4" y1="16" x2="28" y2="16" stroke="#F4F1EA" stroke-width="1.2" />
+  <!-- Prime meridian -->
+  <line x1="16" y1="4" x2="16" y2="28" stroke="#F4F1EA" stroke-width="1.2" />
+</svg>

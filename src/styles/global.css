@@ -1,0 +1,11 @@
+@import "tailwindcss";
+
+@theme {
+  --color-carbon: #161616;
+  --color-bone: #F4F1EA;
+  --color-slate: #5E6773;
+  --color-rust: #A64B2A;
+  --color-steel: #2E5B75;
+
+  --font-sans: 'Inter', system-ui, sans-serif;
+}
